@@ -1,0 +1,57 @@
+PROGRAM ::= INSTRUCTION_STATEMENT+
+INSTRUCTION_STATEMENT ::= LINE_DELIMITER+ | if BOOLEAN_EXPR IF_STATEMENT | INSTRUCTION DELIMITER | // COMMENT+ LINE_DELIMITER | ''' MULTILINECOMMENT
+INSTRUCTION ::= move NUMBER_EXPRESSION
+    		| backtrack NUMBER_EXPRESSION
+    		| turn NUMBER_EXPRESSION
+    		| pickup
+    		| drop
+             | travel_along_wall
+             | reverse_along_wall
+             | while BOOLEAN_EXPR { INSTRUCTION_STATEMENT* }
+             | declare VARIABLE_NAME = NUMBER
+             | print PRINT_STATEMENT
+             | turn_towards_first_thing
+             | turn_towards_first_box
+             | turn_towards_closest_thing
+             | turn_towards_visible_thing
+             | VARIABLE_NAME ASSIGNMENT
+
+
+IF_STATEMENT ::= IF_BODY ELSE_STATEMENT?
+ELSE_STATEMENT ::= else IF_BODY
+IF_BODY ::=  { INSTRUCTION_STATEMENT* } LINE_DELIMITER? | NEW_LINE* INSTRUCTION_STATEMENT
+NEW_LINE ::= [\n\r]
+DELIMITER ::= // COMMENT+ | LINE_DELIMITER
+LINE_DELIMITER ::= [;]+ | NEW_LINE
+ASSIGNMENT ::= | = NUMBER_EXPRESSION
+			   | ++
+			   | --
+			   | += NUMBER_EXPRESSION
+			   | -= NUMBER_EXPRESSION
+			   | *= NUMBER_EXPRESSION
+			   | /= NUMBER_EXPRESSION
+
+
+PRINT_STATEMENT ::= STRING | NUMBER_EXPRESSION
+STRING ::= " NO_QUOTE* "
+NO_QUOTE ::= [^\"]*
+COMMENT ::= [^;\n\r]*
+MULTILINECOMMENT ::= '?'?[^']+'?[^']*'?[^']* NEW_LINE* MULTILINECOMMENT NEW_LINE* | '''
+NUMBER_EXPRESSION ::= NUMBER OPERATOR_EXPRESSION*
+OPERATOR_EXPRESSION ::= + NUMBER | - NUMBER | / NUMBER | * NUMBER
+BOOLEAN_EXPR ::= BOOLEAN BOOLEAN_COND*
+BOOLEAN_COND ::= or BOOLEAN_EXPR | and BOOLEAN_EXPR
+BOOLEAN ::= true | false | not BOOLEAN | touching_wall
+            | touching_thing
+            | touching_box
+            | touching_robot
+            | thing_is_visible
+            | NUMBER_EXPRESSION CONDITIONAL*
+CONDITIONAL ::= COMPARISON NUMBER_EXPRESSION
+COMPARISON ::= < | > | == | !=
+NUMBER ::= INTEGER
+           | number_of_things_on_ground | VARIABLE_NAME
+           | distance_to_first_thing | distance_to_closest_thing | distance_to_first_box | distance_to_visible_thing
+INTEGER ::= [0-9-]+
+WORD ::= [A-Za-z0-9]*
+VARIABLE_NAME ::= [A-Za-z][A-Za-z0-9]*

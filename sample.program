@@ -1,0 +1,147 @@
+
+'''
+Initialize boolean values here,
+reverse determines how we traverse walls,
+stuck lets us know if we are stuck,
+and left decides which way to turn when we collide with something
+new!
+'''
+reverse = false; stuck = false; left = true;
+
+//Attempts is a counter of how many times we have attempted to collect a thing
+//If it gets to high we change our approach.
+attempts = 0
+
+while number_of_things_on_ground > 0{
+    
+    //We use this value for distance deltas.
+    distfrom = distance_to_closest_thing
+    
+    // Grab what we can without obstructions.
+    if thing_is_visible{
+        turn_towards_visible_thing
+        move distance_to_visible_thing
+        
+        if touching_thing{
+            print "Got something!"
+            pickup
+            attempts = 0 //reset counter.
+        }
+    }
+    
+    // If we hit something back up and make a right angled turn
+    // then offset the robots position slightly.    
+    if touching_box or touching_robot or stuck and touching_wall{
+        print "Bump.."
+        if left{
+            move -20
+            turn 90
+            move 50
+            turn -30
+            move 30
+            left = false
+        }
+        else{
+            move -20
+            turn -90
+            move 50
+            turn 30
+            move 30
+            left = true
+        }
+    }
+
+    //Assume we are no longer stuck.
+    stuck = false
+
+    '''
+    This is the main exploratory route, it sticks 
+    to either the right hand or left hand maze-exploring rule
+    depending on the current number of attempts.
+    It breaks when we see a new thing,
+    or if we get stuck.
+    '''
+    while not thing_is_visible and not touching_robot and not touching_box and number_of_things_on_ground > 0 and not stuck{
+        turn_towards_closest_thing
+        move distance_to_closest_thing
+        
+        //Follow wall around the maze.
+        while touching_wall and not thing_is_visible and not stuck{
+            
+            attempts++
+            
+            delta = distfrom - distance_to_closest_thing
+
+            //If we move less than 30 per iteration, we are probably stuck.
+            if delta > -15 and delta < 15
+                stuck = true
+
+            distfrom = distance_to_closest_thing
+            
+            if reverse
+                reverse_along_wall
+            else
+                travel_along_wall
+            
+        }
+        
+    }
+    
+    delta = distfrom - distance_to_closest_thing
+    if delta > -10 and delta < 10
+            stuck = true
+            
+    if attempts > 6{
+        print "Switched maze rules"
+        reverse = true
+        attempts = 0
+    }
+}
+
+while not touching_box{
+    
+    distfrom = distance_to_first_box
+    
+    turn_towards_first_box
+    move distance_to_first_box
+    
+    if  touching_robot or stuck and touching_wall{
+        if left{
+            move -10
+            turn 90
+            move 50
+            left = false
+        }
+        else{
+            move -10
+            turn 90
+            move 50
+            left = true 
+        }
+        stuck = false
+    }
+
+    while touching_wall and not touching_box{
+        attempts++
+        if reverse
+            reverse_along_wall
+        else
+            travel_along_wall
+            
+        turn_towards_first_box
+        move distance_to_first_box
+        if not touching_box backtrack 2
+    }
+    
+    delta = distfrom - distance_to_closest_thing
+    if delta > -10 and delta < 10
+            stuck = true
+    
+    if attempts > 6{
+        print "Switched maze rules"
+        reverse = true
+        attempts = 0
+    }
+}
+drop // We did it!
+print "I did it....."
